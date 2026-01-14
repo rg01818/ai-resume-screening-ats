@@ -112,32 +112,33 @@ analyze = st.button("🔍 Analyze Resume", use_container_width=True)
 # ================== PROCESS ==================
 if analyze:
     if resume_file and jd.strip():
-        with st.spinner("🤖 AI + GenAI analyzing resume..."):
-            resume_text = extract_text(resume_file)
-            # 🔒 ATS safety check for image-based / non-text resumes
-if len(resume_text.strip()) < 100:
-    st.error(
-        "Resume text could not be extracted properly. "
-        "Please upload an ATS-friendly (text-based) PDF."
-    )
-    st.stop()
+       with st.spinner("🤖 AI + GenAI analyzing resume..."):
+    resume_text = extract_text(resume_file)
 
-            resume_clean = clean_text(resume_text)
-            jd_clean = clean_text(jd)
+    # 🔒 ATS safety check
+    if len(resume_text.strip()) < 100:
+        st.error(
+            "Resume text could not be extracted properly. "
+            "Please upload an ATS-friendly (text-based) PDF."
+        )
+        st.stop()
 
-            sim = similarity_score(resume_clean, jd_clean)
+    resume_clean = clean_text(resume_text)
+    jd_clean = clean_text(jd)
 
-            resume_skills = extract_skills(resume_clean)
-            jd_skills = extract_skills(jd_clean)
+    sim = similarity_score(resume_clean, jd_clean)
 
-            matched = list(set(resume_skills) & set(jd_skills))
-            missing = list(set(jd_skills) - set(resume_skills))
+    resume_skills = extract_skills(resume_clean)
+    jd_skills = extract_skills(jd_clean)
 
-            skill_score = len(matched) / max(len(jd_skills),1)
-            final_score = (0.6 * sim) + (0.4 * skill_score)
+    matched = list(set(resume_skills) & set(jd_skills))
+    missing = list(set(jd_skills) - set(resume_skills))
 
-            readiness = int(final_score * 100)
-            skill_gap = 100 - readiness
+    skill_score = len(matched) / max(len(jd_skills), 1)
+    final_score = (0.6 * sim) + (0.4 * skill_score)
+
+    readiness = int(final_score * 100)
+    skill_gap = 100 - readiness
 
             experience = detect_experience(resume_clean)
 
@@ -196,4 +197,5 @@ st.markdown("""
 Final AI + GenAI ATS Capstone Project | Python • NLP • LLM • Streamlit
 </p>
 """, unsafe_allow_html=True)
+
 

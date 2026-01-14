@@ -114,6 +114,14 @@ if analyze:
     if resume_file and jd.strip():
         with st.spinner("🤖 AI + GenAI analyzing resume..."):
             resume_text = extract_text(resume_file)
+            # 🔒 ATS safety check for image-based / non-text resumes
+if len(resume_text.strip()) < 100:
+    st.error(
+        "Resume text could not be extracted properly. "
+        "Please upload an ATS-friendly (text-based) PDF."
+    )
+    st.stop()
+
             resume_clean = clean_text(resume_text)
             jd_clean = clean_text(jd)
 
@@ -188,3 +196,4 @@ st.markdown("""
 Final AI + GenAI ATS Capstone Project | Python • NLP • LLM • Streamlit
 </p>
 """, unsafe_allow_html=True)
+

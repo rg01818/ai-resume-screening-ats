@@ -62,32 +62,42 @@ def detect_experience(text):
 
 # -------- GENAI FUNCTIONS --------
 def genai_resume_feedback(missing_skills, experience):
-    prompt = f"""
+    try:
+        prompt = f"""
 You are an HR expert.
 Give short, clear resume improvement feedback.
 
 Missing skills: {missing_skills}
 Experience level: {experience}
-
-Give 3 bullet points only.
 """
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role":"user","content":prompt}]
-    )
-    return response.choices[0].message.content
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.choices[0].message.content
+
+    except Exception as e:
+        return (
+            "GenAI feedback is temporarily unavailable due to API limits. "
+            "Core ATS analysis is working correctly."
+        )
+
 
 def genai_candidate_summary(resume_text):
-    prompt = f"""
+    try:
+        prompt = f"""
 Summarize this resume in 2 lines for a recruiter:
 
 {resume_text[:1500]}
 """
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role":"user","content":prompt}]
-    )
-    return response.choices[0].message.content
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.choices[0].message.content
+
+    except Exception:
+        return "Candidate summary unavailable due to API limits."
 
 # ================== UI ==================
 st.markdown("""
@@ -197,6 +207,7 @@ st.markdown("""
 Final AI + GenAI ATS Capstone Project | Python • NLP • LLM • Streamlit
 </p>
 """, unsafe_allow_html=True)
+
 
 
 
